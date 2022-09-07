@@ -27,21 +27,13 @@ public class RabbitMqConsumer {
 
     @RabbitListener(queues = PROXY_QUEUE_POST_CREATED)
     public void listenToPostCratedQueue(String message) throws ClassNotFoundException {
-        System.out.println(message);
-        Notification notification = gson.fromJson(message, Notification.class);
-        String type = notification.getType().replace("betapostsandcomments", "gamapostsandcomments");
-        PostCreated postEvent = (PostCreated) gson.fromJson(notification.getBody(), Class.forName(type));
-        PostModel post = new PostModel(postEvent.aggregateRootId(), postEvent.getAuthor(), postEvent.getTitle(), new ArrayList<>());
+        PostModel post = gson.fromJson(message, PostModel.class);
         controller.sendPostCreated("mainSpace", post);
     }
 
     @RabbitListener(queues = PROXY_QUEUE_COMMENT_ADDED)
     public void listenToCommentAddedQueue(String message) throws ClassNotFoundException {
-        System.out.println(message);
-        Notification notification = gson.fromJson(message, Notification.class);
-        String type = notification.getType().replace("betapostsandcomments", "gamapostsandcomments");
-        CommentAdded commentEvent = (CommentAdded) gson.fromJson(notification.getBody(), Class.forName(type));
-        CommentModel comment = new CommentModel(commentEvent.getId(), commentEvent.aggregateRootId(), commentEvent.getAuthor(), commentEvent.getContent());
-        controller.sendCommentAdded(commentEvent.aggregateRootId(), comment);
+        CommentModel comment = gson.fromJson(message, CommentModel.class);
+        controller.sendCommentAdded(comment.getPostId(), comment);
     }
 }
