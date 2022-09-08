@@ -37,8 +37,7 @@ public class SocketController {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("correlationId") String correlationId) {
-        System.out.println(session.toString());
-        logger.info("Connect by " + correlationId);
+        logger.info("Connected from " + correlationId);
         var map = sessions.getOrDefault(correlationId, new HashMap<>());
         map.put(session.getId(), session);
         sessions.put(correlationId, map);
@@ -62,7 +61,7 @@ public class SocketController {
 
         var message = gson.toJson(model);
         if (Objects.nonNull(correlationId) && sessions.containsKey(correlationId)) {
-            logger.info("send from " + correlationId);
+            logger.info("sent from " + correlationId);
 
             sessions.get(correlationId).values()
                     .forEach(session -> {
@@ -79,7 +78,7 @@ public class SocketController {
 
         var message = gson.toJson(model);
         if (Objects.nonNull(correlationId) && sessions.containsKey(correlationId)) {
-            logger.info("send from " + correlationId);
+            logger.info("sent from " + correlationId);
 
             sessions.get(correlationId).values()
                     .forEach(session -> {
